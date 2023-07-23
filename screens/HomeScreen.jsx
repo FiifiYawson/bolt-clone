@@ -1,7 +1,8 @@
 import screenStyles from "../styles/screenStyle"
 
 import {
-  useRef
+  useRef,
+  useState,
 } from "react"
 
 import {
@@ -21,19 +22,25 @@ import CustomBottomSheet from "../components/HomePage/CustomBottomSheet"
 
 const Home = () => {  
 
-  const pickUpInputRef = useRef()
-  const dropOffInputRef = useRef()
-
   const bottomSheetRef = useRef()
+
+  const [inputs, setInputs] = useState([{
+    focused: false,
+    value: ""
+  },{
+    focused: false,
+    value: ""
+  }])
+
 
   // animated bottom Sheet index
   const animatedIndex = useSharedValue(1)
 
   const props = {
-    pickUpInputRef,
-    dropOffInputRef,
     bottomSheetRef,
     animatedIndex,
+    inputs,
+    setInputs,
   }
 
   return (
@@ -46,8 +53,5 @@ const Home = () => {
     </HomePageContext.Provider>
   )
 }
-
-// const styles = StyleSheet.create({
-// })
 
 export default Home

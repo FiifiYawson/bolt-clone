@@ -10,7 +10,7 @@ const MainStackRouter = () => {
 
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName="login"  screenOptions={{
+            <Stack.Navigator initialRouteName="home"  screenOptions={{
                 headerShown: false,
                 headerShadowVisible: false
             }} >

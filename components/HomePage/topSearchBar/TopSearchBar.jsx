@@ -1,21 +1,21 @@
 import {
-    useState,
     useContext
 } from 'react'
 
 import {
-  View,
-  Text,
-  Dimensions,
-  StyleSheet,
-  Image,
-  TouchableWithoutFeedback
+    View,
+    Text,
+    Dimensions,
+    StyleSheet,
+    Image,
+    TouchableWithoutFeedback
 } from 'react-native'
 
 import Animated, {
-  useAnimatedStyle,
-  interpolate,
-  withTiming,
+    useAnimatedStyle,
+    interpolate,
+    withTiming,
+    useSharedValue
 } from 'react-native-reanimated'
 
 import TopSearchBarInputField from './TopSearchBarInputField'
@@ -28,22 +28,15 @@ import { HomePageContext } from '../../../utils/contexts'
 
 
 const TopSearchBar = () => {
-    const [pickUpInput, setPickUpInput] = useState({
-        focused: false,
-        value: ""
-    })
-
-    const [dropOffInput, setDropOffInput] = useState({
-        focused: false,
-        value: ""
-    })
-
     const {
-        pickUpInputRef,
-        dropOffInputRef,
         animatedIndex,
         bottomSheetRef,
+        inputs,
+        setInputs,
     } = useContext(HomePageContext)
+
+    const selectedInputIndex = useSharedValue(null)
+    const selectedInputDragY = useSharedValue(0)
 
     const animatedTopSearchBarStyles = useAnimatedStyle(() => {
         return {
@@ -57,9 +50,31 @@ const TopSearchBar = () => {
     })
 
     const closeTopSearchBar = () => {
-        pickUpInputRef.current.blur()
-        dropOffInputRef.current.blur()
         bottomSheetRef.current.collapse(withTiming())
+
+        setInputs((inputs) => {
+            inputs.forEach(input => {
+                input.focused = false
+
+                console.log(input.focused)
+            })
+            
+            console.log(inputs)
+            return [...inputs]
+        })
+    }
+
+    const addInput = () => {
+        if (inputs.length >= 4) return
+        
+        setInputs((inputs) => {
+            inputs.splice(inputs.length - 1, 0, {
+                value: "",
+                focused: false,
+            })
+
+            return [...inputs]
+        })
     }
 
     return (
@@ -69,22 +84,23 @@ const TopSearchBar = () => {
                     <Image source={closeIcon} />
                 </TouchableWithoutFeedback>
                 <Text style={styles.topSearchBarTitle}>Your route</Text>
-                <Image source={plusIcon} />
+                <TouchableWithoutFeedback onPress={addInput}>
+                    <Image source={plusIcon} onPress />
+                </TouchableWithoutFeedback>
             </View>
-            <View style={styles.inputFieldsBoxContainer} >
-                <TopSearchBarInputField
-                    inputRef={pickUpInputRef}
-                    input={pickUpInput}
-                    setInput={setPickUpInput}
-                />
-
-                <TopSearchBarInputField
-                    inputRef={dropOffInputRef}
-                    input={dropOffInput}
-                    setInput={setDropOffInput}
-                    trailingImage={mapIcon}
-                />
-            </View>
+                {inputs.map((input, index) =>
+                    <TopSearchBarInputField
+                        key={index}
+                        placeholder={index === 0 ? "Search pick-up location" : inputs.length === index + 1 ? "Destination": "Add Stop"}
+                        index={index}
+                        input={input}
+                        setInput={setInputs}
+                        addedStops={inputs.length >= 3}
+                        trailingImage={input.focused ? mapIcon : null}
+                        selectedInputDragY={selectedInputDragY}
+                        selectedInputIndex ={ selectedInputIndex}
+                    />
+                )}
         </Animated.View>
     )
 }
@@ -99,6 +115,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFFFFF",
         padding: 20,
         paddingTop: 50,
+        backgroundColor: "#FFFFFF",
     },
     topSearchBarNav: {
         flexDirection: "row",
@@ -109,10 +126,6 @@ const styles = StyleSheet.create({
     topSearchBarTitle: {
         fontSize: 16,
         fontWeight: "700"
-    },
-    inputFieldsBoxContainer: {
-        backgroundColor: "#F1F1F1",
-        borderRadius: 8,
     },
 })
 
