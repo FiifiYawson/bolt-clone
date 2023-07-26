@@ -1,8 +1,8 @@
 import { createStackNavigator } from "@react-navigation/stack"
 import { NavigationContainer } from "@react-navigation/native"
-import Home from "../screens/HomeScreen"
 import LoginRoutes from "./LoginRoutes"
 import { Text } from "react-native"
+import MainDrawerRoutes from "./MainDrawerRoutes"
 
 const MainStackRouter = () => {
 
@@ -10,11 +10,11 @@ const MainStackRouter = () => {
 
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName="home"  screenOptions={{
+            <Stack.Navigator initialRouteName="main"  screenOptions={{
                 headerShown: false,
                 headerShadowVisible: false
             }} >
-                <Stack.Screen name='home' component={Home} />
+                <Stack.Screen name='main' component={MainDrawerRoutes} />
                 <Stack.Screen name='login' component={LoginRoutes} />
             </Stack.Navigator>
         </NavigationContainer>

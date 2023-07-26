@@ -55,11 +55,8 @@ const TopSearchBar = () => {
         setInputs((inputs) => {
             inputs.forEach(input => {
                 input.focused = false
-
-                console.log(input.focused)
             })
             
-            console.log(inputs)
             return [...inputs]
         })
     }
