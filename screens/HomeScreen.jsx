@@ -6,7 +6,9 @@ import {
 } from "react"
 
 import {
-  View
+  View,
+  TouchableOpacity,
+  Text,
 } from "react-native"
 
 import {
@@ -20,7 +22,7 @@ import { HomePageContext } from "../utils/contexts"
 import CustomBottomSheet from "../components/HomePage/CustomBottomSheet"
 
 
-const Home = () => {  
+const Home = ({navigation}) => {  
 
   const bottomSheetRef = useRef()
 
@@ -47,7 +49,15 @@ const Home = () => {
     <HomePageContext.Provider value={props}>
       <View style={screenStyles.page}>
         <CustomBottomSheet />
-        
+        <TouchableOpacity onPress={() => navigation.openDrawer()}>
+          <View style={{
+            position:"absolute",
+            top: 20,
+            left: 20
+          }}>
+          <Text>Drawer Button</Text>
+          </View>
+        </TouchableOpacity>
         <TopSearchBar/>
       </View>
     </HomePageContext.Provider>

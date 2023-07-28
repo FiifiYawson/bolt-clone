@@ -5,23 +5,14 @@ import {
 
 import {
     DrawerItemList,
-    DrawerItem
+    DrawerItem,
+    DrawerContentScrollView
 } from "@react-navigation/drawer"
 
 export default DrawerComponent = (props) => {
     return (
-        <View 
-            style={{
-                height: "100%", 
-                width: "100%", 
-                backgroundColor: "red"
-            }}
-        >
-            <DrawerItemList {...props} >
-                <DrawerItem {...props} onPress={()=>console.log("hello")}>
-                    <Text>Hello</Text>
-                </DrawerItem>
-            </DrawerItemList>
+        <View style={{flex:1}}>
+            <Text>Hellsdfggdfg</Text>
         </View>
     )
 }

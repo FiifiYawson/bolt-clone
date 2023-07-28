@@ -1,6 +1,7 @@
 import {createDrawerNavigator} from "@react-navigation/drawer"
 import HomeScreen from "../screens/HomeScreen"
 import DrawerComponent from "../components/DrawerComponent"
+import { TouchableOpacity } from "react-native-gesture-handler"
 
 export default DrawerRouter = () => {
     const drawer = createDrawerNavigator()
@@ -9,7 +10,8 @@ export default DrawerRouter = () => {
         <drawer.Navigator 
             initialRouteName="home" 
             screenOptions={{
-                headerShown: false,
+                title: "",
+                headerShown: false
             }}
             drawerContent={DrawerComponent}
         >
