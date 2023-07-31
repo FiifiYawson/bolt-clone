@@ -91,9 +91,10 @@ const TopSearchBarInputField = ({input, index, placeholder, trailingImage, trail
         const height = styles.inputFieldBox.height
 
         let startPoint
+        let translateStyles
 
         if (selectedInputIndex.value === null || selectedInputIndex.value === index) {
-            return {
+            translateStyles = {
                 transform: [
                     { translateY: selectedInputDragY.value },
                 ]
@@ -102,7 +103,7 @@ const TopSearchBarInputField = ({input, index, placeholder, trailingImage, trail
         } else if (selectedInputIndex.value < index) {
             startPoint = (index - selectedInputIndex.value - 1) * height
 
-            return {
+            translateStyles = {
                 transform: [
                     {
                         translateY: interpolate(
@@ -118,7 +119,7 @@ const TopSearchBarInputField = ({input, index, placeholder, trailingImage, trail
         } else {
             startPoint = ((index - selectedInputIndex.value) + 1) * height
 
-            return {
+            translateStyles =  {
                 transform: [
                     {
                         translateY: interpolate(
@@ -131,6 +132,10 @@ const TopSearchBarInputField = ({input, index, placeholder, trailingImage, trail
                 ]
             }
         }
+
+        let selectedInputStyles = {}
+
+        return {...translateStyles}
     })
 
     const rearrangeGestureHandler = useAnimatedGestureHandler({

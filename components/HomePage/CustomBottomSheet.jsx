@@ -68,6 +68,7 @@ const CustomBottomSheet = () => {
             snapPoints={snapPoints}
             keyboardBehavior="interactive"
             ref = {bottomSheetRef}
+            style={styles.bottomSheetContainer}
         >
 
             <BottomSheetView style={styles.bottomSheet}>
@@ -106,6 +107,17 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         height: "100%",
         justifyContent: "center",
+    },
+    bottomSheetContainer: {
+        shadowColor: "#000",
+        shadowOffset: {
+        width: 0,
+        height: 5,
+        },
+        shadowOpacity: 0.34,
+        shadowRadius: 100,
+        elevation: 50,
+        borderRadius: 24,
     },
     bottomSheet: {
         paddingHorizontal: 20
