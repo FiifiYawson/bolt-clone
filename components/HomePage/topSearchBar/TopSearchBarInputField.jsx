@@ -20,7 +20,7 @@ import Animated, {
     useAnimatedStyle,
     useAnimatedGestureHandler,
     interpolate,
-    Extrapolate
+    Extrapolate,
 } from "react-native-reanimated"
 
 import searchTrans from "../../../assets/app/icons/SearchTrans.png"
@@ -31,11 +31,18 @@ import { PRIMARY_COLOR } from "../../../config/constants"
 
 import { HomePageContext } from '../../../utils/contexts'
 
+import Icon from "react-native-vector-icons/Fontisto"
+
+import useSearchLocation from "../../../hooks/useSearchLocation"
+
 
 const TopSearchBarInputField = ({input, index, placeholder, trailingImage, trailImageCallback, addedStops, selectedInputDragY, selectedInputIndex }) => {
     
     const inputRef = useRef()
 
+    const {getAutoCompletePlaces, results} = useSearchLocation()
+
+    console.log("top", results)
     const {
         setInputs,
         inputs,
@@ -64,11 +71,14 @@ const TopSearchBarInputField = ({input, index, placeholder, trailingImage, trail
     })
 
     const changeText = (text) => {
+        
         setInputs((inputs) => {
             inputs[index] = { ...input, value: text }
-        
+            
             return [...inputs]
         })
+        
+        getAutoCompletePlaces(text)
     }
 
     const deleteField = () => {
@@ -133,8 +143,6 @@ const TopSearchBarInputField = ({input, index, placeholder, trailingImage, trail
             }
         }
 
-        let selectedInputStyles = {}
-
         return {...translateStyles}
     })
 
@@ -185,7 +193,9 @@ const TopSearchBarInputField = ({input, index, placeholder, trailingImage, trail
                     {trailingImage && <Image source={trailingImage} />}
                     {addedStops && 
                         <PanGestureHandler onGestureEvent={rearrangeGestureHandler}>
-                            <Animated.View style={{height: 20, width: 20, backgroundColor: "red"}}></Animated.View>
+                            <Animated.View>
+                                <Icon name='nav-icon-grid-a' color="#D9D9D9" />
+                            </Animated.View>
                         </PanGestureHandler>
                     }
 

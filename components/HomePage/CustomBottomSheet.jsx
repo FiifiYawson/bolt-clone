@@ -28,11 +28,16 @@ import { HomePageContext } from "../../utils/contexts"
 
 import search from "../../assets/app/icons/search.png"
 
+import useSearchLocation from "../../hooks/useSearchLocation"
 
 const CustomBottomSheet = () => {
     const snapPoints = [286, "100%"]
 
     const {animatedIndex, bottomSheetRef} = useContext(HomePageContext)
+
+    const {results} = useSearchLocation()
+
+    console.log("bottom", results)
 
     // shared values for search button splash effect
     const radius = useSharedValue(0)
@@ -79,6 +84,10 @@ const CustomBottomSheet = () => {
                         <Text style={styles.destinationSearchBoxText}>Where to?</Text>
                     </View>
                 </TapGestureHandler>
+
+                <View style={styles.placeSuggestions}>
+                    {results.map(data => <Text>{data.structured_formatting.main_text}</Text>)}
+                </View>
             </BottomSheetView>
 
         </BottomSheet>
@@ -116,7 +125,7 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.34,
         shadowRadius: 100,
-        elevation: 50,
+        elevation: 30,
         borderRadius: 24,
     },
     bottomSheet: {
@@ -125,6 +134,9 @@ const styles = StyleSheet.create({
     buttonSplashEffect: {
         position: "absolute",
     },
+    placeSuggestions: {
+
+    }
 })
 
 export default CustomBottomSheet

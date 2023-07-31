@@ -4,7 +4,7 @@ import Splash from "./screens/SplashScreen"
 import MainStackRouter from "./routes/MainStackRouter"
 
 export default function App() {
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     setTimeout(() => {
