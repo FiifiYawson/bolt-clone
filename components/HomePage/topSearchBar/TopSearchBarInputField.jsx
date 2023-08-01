@@ -33,20 +33,59 @@ import { HomePageContext } from '../../../utils/contexts'
 
 import Icon from "react-native-vector-icons/Fontisto"
 
-import useSearchLocation from "../../../hooks/useSearchLocation"
+import { GOOGLE_MAP_API_KEY } from "@env"
 
 
 const TopSearchBarInputField = ({input, index, placeholder, trailingImage, trailImageCallback, addedStops, selectedInputDragY, selectedInputIndex }) => {
     
     const inputRef = useRef()
 
-    const {getAutoCompletePlaces, results} = useSearchLocation()
-
-    console.log("top", results)
     const {
         setInputs,
         inputs,
+        setSearchPredictions,
+        googlePlacesSessionToken
     } = useContext(HomePageContext)
+
+
+    const getAutoCompletePlaces = async (text) => {
+        const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${text}&key=${GOOGLE_MAP_API_KEY}&sessionToken=${googlePlacesSessionToken.current}`
+
+        try{
+            const res = await fetch(url)
+    
+            setSearchPredictions((state) => {
+                return {
+                    ...state,
+                    isLoading: true,
+                }
+            })
+
+            if (!res.ok) {
+                setSearchPredictions((state) => {
+                    return {
+                        ...state,
+                        isLoading: false,
+                    }
+                })
+
+                return
+            }
+        
+            const data = await res.json()
+
+            setSearchPredictions((state) => {
+                return {
+                    ...state,
+                    isLoading: false,
+                    results: data.predictions
+                }
+            })
+    
+        }catch(e){
+            console.log("error")
+        }
+    }
 
     useEffect(()=>{
         if (input.focused) {

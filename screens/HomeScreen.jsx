@@ -27,18 +27,28 @@ import menuIcon from "../assets/app/icons/menu.png"
 
 import MapView from "react-native-maps"
 
+import {v4 as uuid} from "uuid"
+
 const Home = ({navigation}) => {  
 
   const bottomSheetRef = useRef()
 
-  const [inputs, setInputs] = useState([{
-    focused: false,
-    value: ""
-  },{
-    focused: false,
-    value: ""
-  }])
+  const [inputs, setInputs] = useState([
+    {
+      focused: false,
+      value: ""
+    },{
+      focused: false,
+      value: ""
+    }
+  ])
+  
+  const [searchPredictions, setSearchPredictions] = useState({
+    isLoading: false,
+    results: []
+  })
 
+  const googlePlacesSessionToken = useRef(uuid())
 
   // animated bottom Sheet index
   const animatedIndex = useSharedValue(1)
@@ -48,6 +58,9 @@ const Home = ({navigation}) => {
     animatedIndex,
     inputs,
     setInputs,
+    searchPredictions,
+    setSearchPredictions,
+    googlePlacesSessionToken
   }
 
   return (

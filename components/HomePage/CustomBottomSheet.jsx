@@ -33,11 +33,11 @@ import useSearchLocation from "../../hooks/useSearchLocation"
 const CustomBottomSheet = () => {
     const snapPoints = [286, "100%"]
 
-    const {animatedIndex, bottomSheetRef} = useContext(HomePageContext)
-
-    const {results} = useSearchLocation()
-
-    console.log("bottom", results)
+    const {
+        animatedIndex,
+        bottomSheetRef,
+        searchPredictions
+    } = useContext(HomePageContext)
 
     // shared values for search button splash effect
     const radius = useSharedValue(0)
@@ -86,7 +86,33 @@ const CustomBottomSheet = () => {
                 </TapGestureHandler>
 
                 <View style={styles.placeSuggestions}>
-                    {results.map(data => <Text>{data.structured_formatting.main_text}</Text>)}
+                    {searchPredictions.isLoading ?
+                        <Text>
+                            isLoading....
+                            isLoading....
+                            isLoading....isLoading....
+                            isLoading....
+                            isLoading....
+                            isLoading....
+                            isLoading....
+                            isLoading....
+
+                            isLoading....
+                            isLoading....
+                            isLoading....
+                            isLoading....
+                            isLoading....
+
+                            isLoading....
+                            isLoading....
+                        </Text>
+                        :
+                        searchPredictions.results.map(data =>
+                        <Text key={data.place_id}>
+                                {data.structured_formatting.main_text}
+                                {data.structured_formatting.secondary_text}
+                        </Text>
+                    )}
                 </View>
             </BottomSheetView>
 
@@ -135,7 +161,7 @@ const styles = StyleSheet.create({
         position: "absolute",
     },
     placeSuggestions: {
-
+        paddingTop: 200,
     }
 })
 
