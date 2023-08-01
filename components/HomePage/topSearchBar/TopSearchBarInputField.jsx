@@ -10,6 +10,7 @@ import {
     useRef,
     useEffect,
     useContext,
+    useCallback,
 } from "react"
 
 import {
@@ -40,25 +41,47 @@ const TopSearchBarInputField = ({input, index, placeholder, trailingImage, trail
     
     const inputRef = useRef()
 
+    const abortController = useRef()
+
     const {
         setInputs,
         inputs,
         setSearchPredictions,
-        googlePlacesSessionToken
+        googlePlacesSessionToken,
     } = useContext(HomePageContext)
 
+    const getAutoCompletePlaces = useCallback( async (text) => {
+        const types = ["establishment"]
+        const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${text}&key=${GOOGLE_MAP_API_KEY}&sessionToken=${googlePlacesSessionToken.current}&types=${types.join("|")}`
 
-    const getAutoCompletePlaces = async (text) => {
-        const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${text}&key=${GOOGLE_MAP_API_KEY}&sessionToken=${googlePlacesSessionToken.current}`
+        if(abortController.current) abortController.current.abort()
+
+        abortController.current = new AbortController()
 
         try{
-            const res = await fetch(url)
+            if(text === "") {
+                setSearchPredictions((state) => {
+                    return {
+                        ...state,
+                        isLoading: false,
+                        results: [],
+                    }
+                })
     
+                return
+            } 
+
             setSearchPredictions((state) => {
                 return {
                     ...state,
                     isLoading: true,
                 }
+            })
+
+            console.log("loading")
+    
+            const res = await fetch(url, {
+                signal: abortController.current.signal,
             })
 
             if (!res.ok) {
@@ -67,8 +90,7 @@ const TopSearchBarInputField = ({input, index, placeholder, trailingImage, trail
                         ...state,
                         isLoading: false,
                     }
-                })
-
+                })    
                 return
             }
         
@@ -77,15 +99,23 @@ const TopSearchBarInputField = ({input, index, placeholder, trailingImage, trail
             setSearchPredictions((state) => {
                 return {
                     ...state,
+                    results: data.predictions,
                     isLoading: false,
-                    results: data.predictions
+                }
+            })    
+        }catch(e){
+            console.log(e)
+
+            if(e.name === "AbortError") return
+
+            setSearchPredictions((state) => {
+                return {
+                    ...state,
+                    isLoading: false,
                 }
             })
-    
-        }catch(e){
-            console.log("error")
         }
-    }
+    }, [abortController.current])
 
     useEffect(()=>{
         if (input.focused) {
@@ -128,7 +158,7 @@ const TopSearchBarInputField = ({input, index, placeholder, trailingImage, trail
 
             return [...inputs]
         })
-    }
+    } 
 
     const rearrangeInputs = () => {
         "worklet"

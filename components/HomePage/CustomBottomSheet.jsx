@@ -7,6 +7,7 @@ import {
     Text,
     StyleSheet,
     Image,
+    // ActivityIndicator
 } from 'react-native'
 
 import BottomSheet, {
@@ -26,17 +27,25 @@ import Animated, {
 
 import { HomePageContext } from "../../utils/contexts"
 
+import {createShimmerPlaceholder} from "react-native-shimmer-placeholder"
+
+import LinearGradient from 'expo-linear-gradient';
+
 import search from "../../assets/app/icons/search.png"
 
-import useSearchLocation from "../../hooks/useSearchLocation"
+import Icon from "react-native-vector-icons/EvilIcons"
+
 
 const CustomBottomSheet = () => {
     const snapPoints = [286, "100%"]
 
+    const Placeholder = createShimmerPlaceholder(LinearGradient)
+
     const {
         animatedIndex,
         bottomSheetRef,
-        searchPredictions
+        searchPredictions,
+        noOfInputs,
     } = useContext(HomePageContext)
 
     // shared values for search button splash effect
@@ -66,6 +75,12 @@ const CustomBottomSheet = () => {
         }
     })
 
+    const animatedBottomSheetPaddingTopAdjustment = useAnimatedStyle(()=>{
+        return {
+            paddingTop: 70 + noOfInputs.value * 40
+        }
+    })
+    
     return (
         <BottomSheet
             index={0}
@@ -85,35 +100,30 @@ const CustomBottomSheet = () => {
                     </View>
                 </TapGestureHandler>
 
-                <View style={styles.placeSuggestions}>
-                    {searchPredictions.isLoading ?
-                        <Text>
-                            isLoading....
-                            isLoading....
-                            isLoading....isLoading....
-                            isLoading....
-                            isLoading....
-                            isLoading....
-                            isLoading....
-                            isLoading....
-
-                            isLoading....
-                            isLoading....
-                            isLoading....
-                            isLoading....
-                            isLoading....
-
-                            isLoading....
-                            isLoading....
-                        </Text>
+                <Animated.View style={[animatedBottomSheetPaddingTopAdjustment]}>
+                    {searchPredictions.isLoading ? 
+                        <View >
+                            <Placeholder width={300} height={20} style={{marginBottom: 10, borderRadius: 10}}/>
+                            <Placeholder width={70} height={13} style={{marginBottom: 20, borderRadius: 10}}/>
+                        </View>
+                        
                         :
+
                         searchPredictions.results.map(data =>
-                        <Text key={data.place_id}>
-                                {data.structured_formatting.main_text}
-                                {data.structured_formatting.secondary_text}
-                        </Text>
-                    )}
-                </View>
+                            <View key={data.place_id} style={styles.placeSuggestionTile}>
+                                <Icon name="location" size={40}  />
+                                <View>
+                                    <Text style={styles.suggestionHead} numberOfLines={1} ellipsizeMode="tail">
+                                        {data.structured_formatting.main_text}
+                                    </Text>
+                                    <Text style={styles.suggestionBody}  numberOfLines={1} ellipsizeMode="tail">
+                                        {data.description}
+                                    </Text>
+                                </View>
+                            </View>
+                        )
+                    }
+                </Animated.View>
             </BottomSheetView>
 
         </BottomSheet>
@@ -160,9 +170,23 @@ const styles = StyleSheet.create({
     buttonSplashEffect: {
         position: "absolute",
     },
-    placeSuggestions: {
-        paddingTop: 200,
-    }
+    placeSuggestionTile:{
+        borderBottomWidth: 1,
+        borderColor: "#D9D9D9",
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 10,ellipsizeMode: "tail",
+        overflow: "hidden"
+    },
+    suggestionHead: {
+        fontSize: 15
+    },
+    suggestionBody: {
+        fontSize: 10,
+        color: "#AAAAAA"
+    },
 })
 
 export default CustomBottomSheet

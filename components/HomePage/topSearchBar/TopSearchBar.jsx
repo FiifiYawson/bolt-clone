@@ -31,21 +31,24 @@ const TopSearchBar = () => {
     const {
         animatedIndex,
         bottomSheetRef,
-        inputs,
         setInputs,
+        noOfInputs,
+        inputs
     } = useContext(HomePageContext)
 
     const selectedInputIndex = useSharedValue(null)
     const selectedInputDragY = useSharedValue(0)
 
     const animatedTopSearchBarStyles = useAnimatedStyle(() => {
+        const topSearchBarHeight = (40 * noOfInputs.value) + 120
         return {
-        transform: [{
-            translateY: interpolate(
-            animatedIndex.value,
-            [0, 1],
-            [-styles.topSearchBar.height, 0])
-        }],
+            transform: [{
+                translateY: interpolate(
+                animatedIndex.value,
+                [0, 1],
+                [-topSearchBarHeight, 0])
+            }],
+            height: topSearchBarHeight
         }
     })
 
@@ -63,12 +66,9 @@ const TopSearchBar = () => {
 
     const addInput = () => {
         if (inputs.length >= 4) return
-        
-        setInputs((inputs) => {
-            inputs.splice(inputs.length - 1, 0, {
-                value: "",
-                focused: false,
-            })
+         
+        setInputs(() => {
+            inputs.splice(inputs.length - 1, 0, "")
 
             return [...inputs]
         })
@@ -85,19 +85,19 @@ const TopSearchBar = () => {
                     <Image source={plusIcon} onPress />
                 </TouchableWithoutFeedback>
             </View>
-                {inputs.map((input, index) =>
-                    <TopSearchBarInputField
-                        key={index}
-                        placeholder={index === 0 ? "Search pick-up location" : inputs.length === index + 1 ? "Destination": "Add Stop"}
-                        index={index}
-                        input={input}
-                        setInput={setInputs}
-                        addedStops={inputs.length >= 3}
-                        trailingImage={input.focused ? mapIcon : null}
-                        selectedInputDragY={selectedInputDragY}
-                        selectedInputIndex ={ selectedInputIndex}
-                    />
-                )}
+            {inputs.map((input, index) =>
+                <TopSearchBarInputField
+                    key={index}
+                    placeholder={index === 0 ? "Search pick-up location" : inputs.length === index + 1 ? "Destination": "Add Stop"}
+                    index={index}
+                    input={input}
+                    setInput={setInputs}
+                    addedStops={inputs.length >= 3}
+                    trailingImage={input.focused ? mapIcon : null}
+                    selectedInputDragY={selectedInputDragY}
+                    selectedInputIndex ={ selectedInputIndex}
+                />
+            )}
         </Animated.View>
     )
 }
@@ -108,11 +108,11 @@ const styles = StyleSheet.create({
         left: 0,
         top: -1,
         width: Dimensions.get("screen").width,
-        height: 270,
         backgroundColor: "#FFFFFF",
         padding: 20,
         paddingTop: 50,
         backgroundColor: "#FFFFFF",
+        elevation: 10,
     },
     topSearchBarNav: {
         flexDirection: "row",

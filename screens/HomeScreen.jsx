@@ -14,7 +14,9 @@ import {
 } from "react-native"
 
 import {
-  useSharedValue
+  useDerivedValue,
+  useSharedValue,
+  withTiming, 
 } from "react-native-reanimated"
 
 import TopSearchBar from "../components/HomePage/topSearchBar/TopSearchBar"
@@ -27,7 +29,8 @@ import menuIcon from "../assets/app/icons/menu.png"
 
 import MapView from "react-native-maps"
 
-import {v4 as uuid} from "uuid"
+import uuid from "react-native-uuid"
+
 
 const Home = ({navigation}) => {  
 
@@ -42,16 +45,18 @@ const Home = ({navigation}) => {
       value: ""
     }
   ])
+
+  console.log(inputs)
   
   const [searchPredictions, setSearchPredictions] = useState({
     isLoading: false,
     results: []
   })
 
-  const googlePlacesSessionToken = useRef(uuid())
+  const googlePlacesSessionToken = useRef(uuid.v4())
 
-  // animated bottom Sheet index
   const animatedIndex = useSharedValue(1)
+  const noOfInputs = useDerivedValue(()=> withTiming(inputs.length) ,[inputs.length])
 
   const props = {
     bottomSheetRef,
@@ -60,7 +65,8 @@ const Home = ({navigation}) => {
     setInputs,
     searchPredictions,
     setSearchPredictions,
-    googlePlacesSessionToken
+    googlePlacesSessionToken,
+    noOfInputs
   }
 
   return (
