@@ -108,6 +108,7 @@ const Home = ({navigation}) => {
         <MapView
           style={styles.map}
           showsUserLocation
+
           region={currentPosition}
         />
         <CustomBottomSheet />
