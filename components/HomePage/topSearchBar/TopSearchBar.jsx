@@ -55,22 +55,29 @@ const TopSearchBar = () => {
     const closeTopSearchBar = () => {
         bottomSheetRef.current.collapse(withTiming())
 
-        setInputs((inputs) => {
-            inputs.forEach(input => {
-                input.focused = false
+        setInputs((inputs) => {            
+            return inputs.map((input) => {
+                return {
+                    ...input,
+                    focused: false
+                }
             })
-            
-            return [...inputs]
         })
     }
 
     const addInput = () => {
         if (inputs.length >= 4) return
          
-        setInputs(() => {
-            inputs.splice(inputs.length - 1, 0, "")
+        setInputs((inputs) => {
+            const newInputs = [...inputs]
 
-            return [...inputs]
+            newInputs.splice(-1, 0, {
+                value: "",
+                focused: false,
+                validInput: null
+            })
+
+            return [...newInputs]
         })
     }
 

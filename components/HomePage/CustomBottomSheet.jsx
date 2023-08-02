@@ -7,7 +7,7 @@ import {
     Text,
     StyleSheet,
     Image,
-    // ActivityIndicator
+    TouchableOpacity,
 } from 'react-native'
 
 import BottomSheet, {
@@ -46,12 +46,31 @@ const CustomBottomSheet = () => {
         bottomSheetRef,
         searchPredictions,
         noOfInputs,
+        setInputs,
     } = useContext(HomePageContext)
 
     // shared values for search button splash effect
     const radius = useSharedValue(0)
     const splashEffectLeft = useSharedValue(0)
     const splashEffectTop = useSharedValue(0)
+
+    const setValidInput = (data) => {
+        setInputs((inputs) => {
+            return inputs.map((input)=> {
+                if(input.focused){
+                    return {
+                        ...input,
+                        validInput:{
+                            id: data.place_id,
+                            name: data.structured_formatting.main_text
+                        }
+                    }
+                }else{
+                    return input
+                }
+            })
+        })
+    }
 
     const searchButtonSplashEffect = (event) => {
         splashEffectLeft.value = event.nativeEvent.x
@@ -110,17 +129,19 @@ const CustomBottomSheet = () => {
                         :
 
                         searchPredictions.results.map(data =>
-                            <View key={data.place_id} style={styles.placeSuggestionTile}>
-                                <Icon name="location" size={40}  />
-                                <View>
-                                    <Text style={styles.suggestionHead} numberOfLines={1} ellipsizeMode="tail">
-                                        {data.structured_formatting.main_text}
-                                    </Text>
-                                    <Text style={styles.suggestionBody}  numberOfLines={1} ellipsizeMode="tail">
-                                        {data.description}
-                                    </Text>
+                            <TouchableOpacity key={data.place_id} onPress={() => setValidInput(data)}  >
+                                <View style={styles.placeSuggestionTile}>
+                                    <Icon name="location" size={40}  />
+                                    <View>
+                                        <Text style={styles.suggestionHead} numberOfLines={1} ellipsizeMode="tail">
+                                            {data.structured_formatting.main_text}
+                                        </Text>
+                                        <Text style={styles.suggestionBody}  numberOfLines={1} ellipsizeMode="tail">
+                                            {data.description}
+                                        </Text>
+                                    </View>
                                 </View>
-                            </View>
+                            </TouchableOpacity>
                         )
                     }
                 </Animated.View>

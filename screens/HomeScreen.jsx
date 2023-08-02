@@ -3,6 +3,7 @@ import screenStyles from "../styles/screenStyle"
 import {
   useRef,
   useState,
+  useEffect,
 } from "react"
 
 import {
@@ -18,6 +19,8 @@ import {
   useSharedValue,
   withTiming, 
 } from "react-native-reanimated"
+
+import * as Geolocation from "expo-location"
 
 import TopSearchBar from "../components/HomePage/topSearchBar/TopSearchBar"
 
@@ -39,21 +42,51 @@ const Home = ({navigation}) => {
   const [inputs, setInputs] = useState([
     {
       focused: false,
-      value: ""
+      value: "",
+      validInput: null
     },{
       focused: false,
-      value: ""
+      value: "",
+      validInput: null
     }
   ])
-
-  console.log(inputs)
   
   const [searchPredictions, setSearchPredictions] = useState({
     isLoading: false,
     results: []
   })
 
+  const [currentPosition, setCurrentPosition] = useState({
+    longitude: 0,
+    latitude: 0,
+  })
+
+  // open and sets Map when valid inputs are provided
+  useEffect(()=>{
+    if(inputs.every(input => input.validInput !== null)){
+      setUpMap(inputs.map(input => input.validInput.id))
+    }
+  },[inputs])
+
+  // grabs and sets user location
+  useEffect(()=>{
+      Geolocation.requestForegroundPermissionsAsync().then(()=>{
+        Geolocation.watchPositionAsync({accuracy: Geolocation.Accuracy.Highest },(position)=>{
+          setCurrentPosition({
+            longitude: position.coords.longitude,
+            latitude: position.coords.latitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          })
+        }).catch((e) => {
+            console.log(e)
+        })
+      });
+  },[])
+
   const googlePlacesSessionToken = useRef(uuid.v4())
+
+  const setUpMap = () => {}
 
   const animatedIndex = useSharedValue(1)
   const noOfInputs = useDerivedValue(()=> withTiming(inputs.length) ,[inputs.length])
@@ -74,12 +107,8 @@ const Home = ({navigation}) => {
       <View style={screenStyles.page}>
         <MapView
           style={styles.map}
-          initialRegion={{
-            latitude: 37.78825,
-            longitude: -122.4324,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
+          showsUserLocation
+          region={currentPosition}
         />
         <CustomBottomSheet />
         <TouchableOpacity onPress={() => navigation.openDrawer()}>
@@ -110,7 +139,6 @@ const styles= StyleSheet.create({
     justifyContent: "center",
   },
   map:{
-    flex: 1,
     position: "absolute",
     top: 0,
     left: 0,

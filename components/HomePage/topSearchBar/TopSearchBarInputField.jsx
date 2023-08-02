@@ -77,8 +77,6 @@ const TopSearchBarInputField = ({input, index, placeholder, trailingImage, trail
                     isLoading: true,
                 }
             })
-
-            console.log("loading")
     
             const res = await fetch(url, {
                 signal: abortController.current.signal,
@@ -104,8 +102,6 @@ const TopSearchBarInputField = ({input, index, placeholder, trailingImage, trail
                 }
             })    
         }catch(e){
-            console.log(e)
-
             if(e.name === "AbortError") return
 
             setSearchPredictions((state) => {
@@ -117,34 +113,61 @@ const TopSearchBarInputField = ({input, index, placeholder, trailingImage, trail
         }
     }, [abortController.current])
 
+    //ensures textField unfocuses when top sheet is closed
     useEffect(()=>{
-        if (input.focused) {
-            inputRef.current.focus()
-        } else {
-            inputRef.current.blur()
-        }
+        if (!input.focused) inputRef.current.blur()
     },[input.focused])
 
     const setFocusOn = () => {
         setInputs((inputs) => {
-            inputs[index] = { ...input, focused: true }
-        
-            return [...inputs]
+            return inputs.map((input, i) => {
+                if(index === i){ 
+                    return {
+                        ...input,
+                        focused: true,
+                    }
+                }else{
+                    return {
+                        ...input,
+                        focused: false
+                    }
+                }
+            })
         })
     }
 
-    const setFocusOff = () => setInputs((inputs) => {
-        inputs[index] = {...input, focused: false}
-        
-        return [...inputs]
-    })
+    const setFocusOff = () => {
+        setInputs((inputs) => {
+            return inputs.map((input, i) => {
+                if(index === i){
+                    return {
+                        ...input,
+                        focused: true,
+                    }
+                }else{
+                    return {
+                        ...input,
+                        focused: false
+                    }
+                }
+            })
+        })
+    }
 
     const changeText = (text) => {
         
         setInputs((inputs) => {
-            inputs[index] = { ...input, value: text }
-            
-            return [...inputs]
+            return inputs.map((input, i)=>{
+                if (i === index){
+                    return {
+                        ...input,
+                        value: text,
+                        validInput: null
+                    }
+                }else{
+                    return input
+                }
+            })
         })
         
         getAutoCompletePlaces(text)
@@ -154,9 +177,7 @@ const TopSearchBarInputField = ({input, index, placeholder, trailingImage, trail
         if (inputs.length <= 2 || index === 0) return
         
         setInputs((inputs) => {
-            inputs.splice(index, 1)
-
-            return [...inputs]
+            return inputs.filter((input,i) => i !== index)
         })
     } 
 
@@ -239,8 +260,9 @@ const TopSearchBarInputField = ({input, index, placeholder, trailingImage, trail
 
     return (
         <View style={styles.inputLayout}>
-            <TouchableWithoutFeedback onPress={setFocusOn}>
-                <Animated.View style={[
+            <TouchableWithoutFeedback onPress={()=>{}}>
+                <Animated.View focusable
+                 style={[
                     styles.inputFieldBox,
                     (index === 0 && !input.focused) ? styles.pickUpInputField : {},
                     (index === inputs.length - 1 && !input.focused ) ? styles.dropOffInputField : {},
@@ -252,7 +274,7 @@ const TopSearchBarInputField = ({input, index, placeholder, trailingImage, trail
                     <TextInput
                         enterKeyHint="search"
                         placeholder={placeholder}
-                        value={input.value}
+                        value={input.validInput ? input.validInput.name : input.value}
                         ref={inputRef}
                         onFocus={setFocusOn}
                         onBlur={setFocusOff}
